@@ -11,7 +11,7 @@ export function createToken(userData) {
 }
 
 export function verifyToken(token) {
-    return jwt.verify(token, 'hdffhdfhdfhdfjhdfhdfhjdhfdhjf', function(err, decoded) {
+    return jwt.verify(token, process.env.JWT_TOKEN_SECRET||'hdffhdfhdfhdfjhdfhdfhjdhfdhjf', function(err, decoded) {
         if (err) {
             return {
                 valid: false

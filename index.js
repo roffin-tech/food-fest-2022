@@ -2,6 +2,7 @@
 
 // import express - is for building the Rest apis
 import express from "express";
+import dotenv from 'dotenv';
 
 // import body-parser - helps to parse the request and create the req.body object
 import bodyParser from "body-parser";
@@ -20,6 +21,9 @@ const __dirname = path.dirname(__filename);
 
 // init express
 const app = express();
+
+// Set up Global configuration access
+dotenv.config();
 
 // use express json
 app.use(bodyParser.json());
