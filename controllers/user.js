@@ -3,7 +3,8 @@
 import { response } from "express";
 import {
     getAllUser,
-    getUserByEmail,
+    getUserByPhone,
+    userLogin,
     insertUser
 } from "../models/UserModel.js";
 import {createToken, verifyToken} from '../config/jwt.js'
@@ -24,7 +25,7 @@ export const allUsers=(req,res)=>{
 
 // get single user
 export const showAUser = (req,res)=>{
-    getUserByEmail(req.params.email,(err,results)=> {
+    getUserByPhone(req.params.email,(err,results)=> {
         if (err) {
             res.send(err);
         }else {
@@ -34,22 +35,44 @@ export const showAUser = (req,res)=>{
 };
 
 // create user
-export const createAccount=(req,res)=>{
+export const createAccount=async (req,res)=>{
     const data = req.body;
-    insertUser(data,(err,results)=> {
+    getUserByPhone(data, (err, response) => {
         if (err) {
-            res.send(err);
-        }else {
-            res.json(results);
+            insertUser(data,(err,results)=> {
+                if (err) {
+                    console.log('error', err)
+                    res.status(500).send(err);
+                }else {
+                    res.send({message: 'success'});
+                }
+            });
+        } else {
+            if (response&& !!response.id) {
+                res.status(400).send({
+                    message: 'User Already Exist',
+                    code: 4001
+                })
+            } else {
+                insertUser(data,(err,results)=> {
+                    if (err) {
+                        console.log('error', err)
+                        res.status(500).send(err);
+                    }else {
+                        res.send({message: 'success'});
+                    }
+                });
+            }
+
         }
-    });
+    })
 };
 
 // user authentication
 export const userAuthentication=async (req,res)=>{
     const data = req.body;
     console.log('model', data)
-    getUserByEmail(data,(err,results)=> {
+    userLogin(data,(err,results)=> {
         console.log('login results', results)
         if (err) {
             res.status(400).send({message: "Entered Phone Number is Not Valid"});

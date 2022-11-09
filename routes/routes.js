@@ -15,7 +15,14 @@ import {verifyToken} from "../config/jwt.js";
 
 
 import {
-    createBooking, fetchBookedTables
+    createBooking,
+    fetchBookedTables,
+    createOrder,
+    getOrderData,
+    getOrderByIdData,
+    createProduct,
+    getProductByIdData,
+    getProductsData
 } from "../controllers/booktable.js";
 
 import upload from "../config/multer.js";
@@ -29,7 +36,7 @@ const router = express.Router();
 
 
 router.use(function isAuthorized(req, res, next){
-    if (req.originalUrl === '/api/users/login') {
+    if (req.originalUrl === '/api/users/login'||req.originalUrl === '/api/users') {
         console.log('orginal url', req.originalUrl)
         next()
     } else {
@@ -58,7 +65,7 @@ router.get("/api/users/", allUsers);
 router.get("/api/users/:email", showAUser);
 
 // create account
-router.post("/api/users/", createAccount);
+router.post("/api/users", createAccount);
 
 // user authentication
 router.post("/api/users/login", userAuthentication);
@@ -69,9 +76,14 @@ router.post("/api/users/validate-token", validateToken);
 // upload an image
 router.post('/api/upload', upload.single('image'), uploadImage);
 
-////////////////////////// Booking ////////////////////////////////
-router.post("/api/book-tables", createBooking);
-router.get("/api/book-tables", fetchBookedTables);
+////////////////////////// Order ////////////////////////////////
+router.post(`/api/orders`, createOrder);
+router.get("/api/users/:userId/orders/:id", getOrderByIdData);
+router.get("/api/users/:userId/orders", getOrderData);
+////////////////////////// Product ////////////////////////////////
+router.post(`/api/products`, createProduct);
+router.get("/api/products/:id", getProductByIdData);
+router.get("/api/products", getProductsData);
 
 
 
