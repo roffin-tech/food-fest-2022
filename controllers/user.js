@@ -38,6 +38,7 @@ export const showAUser = (req,res)=>{
 export const createAccount=async (req,res)=>{
     const data = req.body;
     getUserByPhone(data, (err, response) => {
+        console.log('response', response)
         if (err) {
             insertUser(data,(err,results)=> {
                 if (err) {
@@ -48,7 +49,7 @@ export const createAccount=async (req,res)=>{
                 }
             });
         } else {
-            if (response&& !!response.id) {
+            if (response&& response.length > 0) {
                 res.status(400).send({
                     message: 'User Already Exist',
                     code: 4001
