@@ -10,6 +10,7 @@ import {
     insertProductData,
     getProductsByNameAndMeasureData
 } from "../models/BookTableModel.js";
+import {verifyToken} from "../config/jwt.js";
 
 // create Booking
 export const createBooking=(req,res)=>{
@@ -42,7 +43,7 @@ export const createOrder=async (req,res)=>{
         let ctr = 0
         await data.order_items.forEach((item) => {
 
-             insertOrderDetailsData(item,(err,results)=> {
+             insertOrderDetailsData(item,async (err,results)=> {
                 if (err) {
                     res.status(400).send({message: 'Product saving failed. Please try again.'});
                 }else {
@@ -55,6 +56,11 @@ export const createOrder=async (req,res)=>{
                      console.log('order ids',data.order_items, orderDetailIds)
                      const order_items = JSON.parse(JSON.stringify(orderDetailIds))
                      data.order_items = order_items.join(',')
+
+                     const token = req.headers.authorization.substring(7);
+                     console.log('token', token)
+                     const added_by = await verifyToken(token)
+                     data.added_by = added_by && added_by.userId? added_by.userId: 0
                      console.log('data', data)
                      insertOrderData(data,(err,results)=> {
                          if (err) {
